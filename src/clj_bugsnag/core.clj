@@ -77,7 +77,7 @@
                     {})]
     {:apiKey (:api-key options (env :bugsnag-key))
      :notifier {:name "clj-bugsnag"
-                :version "0.2.9"
+                :version "0.3.0"
                 :url "https://github.com/wunderlist/clj-bugsnag"}
      :events [{:payloadVersion "2"
                :exceptions (unroll ex project-ns)

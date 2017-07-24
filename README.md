@@ -17,21 +17,21 @@ A fully fledged [Bugsnag](https://bugsnag.com) exception reporting client for Cl
 
 ## Releases and Dependency Information
 
-clj-bugsnag is released via [Clojars](https://clojars.org/clj-bugsnag). The Latest stable release is 0.2.5
+clj-bugsnag is released via [Clojars](https://clojars.org/clj-bugsnag). The Latest stable release is 0.3.0
 
 [Leiningen](https://github.com/technomancy/leiningen) dependency information:
 
 ```clojure
-[clj-bugsnag "0.2.5"]
+[whitepages/clj-bugsnag "0.3.0"]
 ```
 
 Maven dependency information:
 
 ```xml
 <dependency>
-  <groupId>clj-bugsnag</groupId>
+  <groupId>whitepages</groupId>
   <artifactId>clj-bugsnag</artifactId>
-  <version>0.2.5</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
