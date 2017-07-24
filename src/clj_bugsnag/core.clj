@@ -57,7 +57,7 @@
 (defn- unroll [ex project-ns]
   (loop [collected []
          current ex]
-    (let [class-name (.getName (:class current))
+    (let [class-name (.getName ^Class (:class current))
           stacktrace (transform-stacktrace (:trace-elems current) project-ns)
           new-item {:errorClass class-name
                     :message (:message current)
