@@ -1,7 +1,8 @@
 (ns clj-bugsnag.ring-test
-  (:require [midje.sweet :refer :all]
-            [clj-bugsnag.ring :as ring]
-            [clj-bugsnag.core :as core]))
+  (:require [clj-bugsnag
+             [core :as core]
+             [ring :as ring]]
+            [midje.sweet :refer :all]))
 
 (fact "middleware calls notify on exception"
   (let [handler (fn [req] (throw (ex-info "BOOM" {})))
