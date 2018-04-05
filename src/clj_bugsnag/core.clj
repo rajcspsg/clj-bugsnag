@@ -84,10 +84,7 @@
      :events   [{:payloadVersion "2"
                  :exceptions     (unroll ex project-ns)
                  :context        (:context options)
-                 :groupingHash   (or (:group options)
-                                     (if (isa? (type exception) clojure.lang.ExceptionInfo)
-                                       (:message ex)
-                                       class-name))
+                 :groupingHash   (:group options)
                  :severity       (or (:severity options) "error")
                  :user           (:user options)
                  :app            {:version      (if (contains? options :version)
