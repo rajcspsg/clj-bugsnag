@@ -84,8 +84,9 @@
      :events   [{:payloadVersion "2"
                  :exceptions     (unroll ex project-ns)
                  :context        (:context options)
-                 :groupingHash   (when-let [group-fn (:group-fn options)]
-                                   (group-fn ex))
+                 :groupingHash   (if-let [group-fn (:group-fn options)]
+                                   (group-fn ex)
+                                   (:group options))
                  :severity       (or (:severity options) "error")
                  :user           (:user options)
                  :app            {:version      (if (contains? options :version)
