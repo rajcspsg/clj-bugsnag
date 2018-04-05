@@ -52,4 +52,4 @@
             e2 (Exception. "Middle" e1)
             e3 (Exception. "Outer"  e2)]
         (->> (core/exception->json e3 {}) :events first :exceptions (map :message))
-        => ["Inner" "Middle" "Outer"]))
+        => ["Outer" "Middle" "Inner"]))

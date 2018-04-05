@@ -64,7 +64,7 @@
           new-item   {:errorClass class-name
                       :message    (:message current)
                       :stacktrace stacktrace}
-          collected  (cons new-item collected)]
+          collected  (conj collected new-item)]
       (if-let [next (:cause current)]
         (recur collected next)
         collected))))
