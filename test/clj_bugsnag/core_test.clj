@@ -53,3 +53,13 @@
             e3 (Exception. "Outer"  e2)]
         (->> (core/exception->json e3 {}) :events first :exceptions (map :message))
         => ["Outer" "Middle" "Inner"]))
+
+(fact "uses :group-fn to create custom groupingHash"
+      (let [ex (Exception. "message")]
+        (-> (core/exception->json ex {:group-fn :message}) :events first :groupingHash)
+        => "message"))
+
+(fact "uses :group for groupingHash if :group-fn is not provided"
+      (let [ex (Exception. "message")]
+        (-> (core/exception->json ex {:group "some group"}) :events first :groupingHash)
+        => "some group"))
