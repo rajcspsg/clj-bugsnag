@@ -50,9 +50,11 @@
         :code       {1 (str ex)
                      2 "thrown while building stack trace."}}])))
 
-(defn- stringify
-  [thing]
-  (if (or (map? thing) (string? thing) (number? thing) (nil? thing) (true? thing) (false? thing) (sequential? thing))
+(def serializable?
+  (some-fn map? string? number? nil? true? false? sequential?))
+
+(defn- stringify [thing]
+  (if (serializable? thing)
     thing
     (str thing)))
 
