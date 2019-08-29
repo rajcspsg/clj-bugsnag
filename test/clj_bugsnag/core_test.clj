@@ -76,10 +76,4 @@
 (fact "metadata JSON"
       (-> (core/exception->json (ex-info "BOOM" {}) {:meta example-meta})
           :events first (get :metaData) (select-keys (keys example-meta)))
-      => {"false"     false
-          "map"       {"foo" "bar"}
-          "nil"       nil
-          "number"    1
-          "sequental" [1 2 3]
-          "string"    "foo"
-          "true"      true})
+      => example-meta)
