@@ -63,3 +63,23 @@
       (let [ex (Exception. "message")]
         (-> (core/exception->json ex {:group "some group"}) :events first :groupingHash)
         => "some group"))
+
+(def example-meta
+  {"map"       {"foo" "bar"}
+   "string"    "foo"
+   "number"    1
+   "nil"       nil
+   "true"      true
+   "false"     false
+   "sequental" [1 2 3]})
+
+(fact "metadata JSON"
+      (-> (core/exception->json (ex-info "BOOM" {}) {:meta example-meta})
+          :events first (get :metaData) (select-keys (keys example-meta)))
+      => {"false"     false
+          "map"       {"foo" "bar"}
+          "nil"       nil
+          "number"    1
+          "sequental" [1 2 3]
+          "string"    "foo"
+          "true"      true})
