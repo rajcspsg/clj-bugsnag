@@ -16,5 +16,5 @@
     "test" ["midje"]}
   :profiles {
     :dev {
-      :dependencies [[midje "1.8.3" :exclusions [potemkin riddley]]]
-      :plugins      [[lein-midje "3.1.3"]]}})
+      :dependencies [[midje "1.9.9" :exclusions [potemkin riddley]]]
+      :plugins      [[lein-midje "3.2.1"]]}})
