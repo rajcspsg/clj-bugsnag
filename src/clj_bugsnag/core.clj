@@ -72,31 +72,33 @@
         collected))))
 
 (defn exception->json
-  [exception options]
+  [exception {:keys [api-key project-ns context group group-fn user severity version environment meta]
+              :or   {api-key     (env :bugsnag-key)
+                     project-ns  "\000"
+                     severity    "error"
+                     version     @git-rev
+                     environment "production"}}]
   (let [ex         (parse-exception exception)
         class-name (.getName ^Class (:class ex))
-        project-ns (get options :project-ns "\000")
         base-meta  (if-let [d (ex-data exception)]
                      {"ex–data" d}
                      {})]
-    {:apiKey   (:api-key options (env :bugsnag-key))
+    {:apiKey   api-key
      :notifier {:name    "clj-bugsnag"
                 :version "0.3.0"
                 :url     "https://github.com/whitepages/clj-bugsnag"}
      :events   [{:payloadVersion "2"
                  :exceptions     (unroll ex project-ns)
-                 :context        (:context options)
-                 :groupingHash   (if-let [group-fn (:group-fn options)]
+                 :context        context
+                 :groupingHash   (if group-fn
                                    (group-fn ex)
-                                   (:group options))
-                 :severity       (or (:severity options) "error")
-                 :user           (:user options)
-                 :app            {:version      (if (contains? options :version)
-                                                  (:version options)
-                                                  @git-rev)
-                                  :releaseStage (or (:environment options) "production")}
+                                   group)
+                 :severity       severity
+                 :user           user
+                 :app            {:version      version
+                                  :releaseStage environment}
                  :device         {:hostname (.. java.net.InetAddress getLocalHost getHostName)}
-                 :metaData       (walk/postwalk stringify (merge base-meta (:meta options)))}]}))
+                 :metaData       (walk/postwalk stringify (merge base-meta meta))}]}))
 
 (defn notify
   "Main interface for manually reporting exceptions.
