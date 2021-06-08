@@ -87,8 +87,8 @@
                     {})]
     {:apiKey   api-key
      :notifier {:name    "clj-bugsnag"
-                :version "0.3.0"
-                :url     "https://github.com/whitepages/clj-bugsnag"}
+                :version "0.5.0"
+                :url     "https://github.com/ekataglobal/clj-bugsnag"}
      :events   [{:payloadVersion "2"
                  :exceptions     (unroll ex project-ns include-src?)
                  :context        context
