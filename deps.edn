@@ -1,9 +1,9 @@
-{:paths ["src" "target/classes"],
+{:paths     ["src" "target/classes"]
  :deps
- {org.clojure/clojure #:mvn{:version "1.8.0"},
-  clj-stacktrace #:mvn{:version "0.2.8"},
-  clj-http #:mvn{:version "2.0.0"},
-  cheshire #:mvn{:version "5.5.0"},
-  environ #:mvn{:version "1.0.2"},
-  org.clojure/data.json #:mvn{:version "0.2.6"}},
+ {org.clojure/clojure           #:mvn{:version "1.8.0"}
+  clj-stacktrace/clj-stacktrace #:mvn{:version "0.2.8"}
+  clj-http/clj-http             #:mvn{:version "2.0.0"}
+  cheshire/cheshire             #:mvn{:version "5.5.0"}
+  environ/environ               #:mvn{:version "1.0.2"}
+  org.clojure/data.json         #:mvn{:version "0.2.6"}}
  :mvn/repos {}}
