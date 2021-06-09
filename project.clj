@@ -6,6 +6,7 @@
   :min-lein-version "2.3.0"
   :dependencies [
     [org.clojure/clojure "1.8.0"]
+    [org.clojure/core.cache "1.0.207"]
     [clj-stacktrace/clj-stacktrace "0.2.8"]
     [clj-http/clj-http "2.0.0"]
     [cheshire/cheshire "5.5.0"]
