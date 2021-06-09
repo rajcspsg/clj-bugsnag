@@ -6,15 +6,15 @@
   :min-lein-version "2.3.0"
   :dependencies [
     [org.clojure/clojure "1.8.0"]
-    [clj-stacktrace "0.2.8"]
-    [clj-http "2.0.0"]
-    [cheshire "5.5.0"]
-    [environ "1.0.2"]
+    [clj-stacktrace/clj-stacktrace "0.2.8"]
+    [clj-http/clj-http "2.0.0"]
+    [cheshire/cheshire "5.5.0"]
+    [environ/environ "1.0.2"]
     [org.clojure/data.json "0.2.6"]]
 
   :aliases {
     "test" ["midje"]}
   :profiles {
     :dev {
-      :dependencies [[midje "1.9.9" :exclusions [potemkin riddley]]]
-      :plugins      [[lein-midje "3.2.1"]]}})
+      :dependencies [[midje/midje "1.9.9" :exclusions [potemkin riddley]]]
+      :plugins      [[lein-midje/lein-midje "3.2.1"]]}})
