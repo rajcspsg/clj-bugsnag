@@ -24,32 +24,45 @@
 
     (closure)))
 
+(defn make-crash-exception []
+  (try
+    (make-crash)
+    (catch Exception ex
+      ex)))
+
 (fact "includes source in stack traces"
-      (try
-        (make-crash)
-        (catch Exception ex
-          (-> (core/exception->json ex nil) :events first :exceptions first :stacktrace second :code)
-          => {17 "  \"A function that will crash\""
-              18 "  []"
-              19 "  (let [closure (fn []"
-              20 "                  (.crash nil))]"
-              21 ""
-              22 "  ;;"
-              23 "  ;; /end to check for 3 lines before and after"}
-          (-> (core/exception->json ex nil) :events first :exceptions first :stacktrace (nth 2) :code)
-          => {22 "  ;;"
-              23 "  ;; /end to check for 3 lines before and after"
-              24 ""
-              25 "    (closure)))"})))
+      (let [ex (make-crash-exception)]
+        (-> (core/exception->json ex nil) :events first :exceptions first :stacktrace second :code)
+        => {17 "  \"A function that will crash\""
+            18 "  []"
+            19 "  (let [closure (fn []"
+            20 "                  (.crash nil))]"
+            21 ""
+            22 "  ;;"
+            23 "  ;; /end to check for 3 lines before and after"}
+        (-> (core/exception->json ex nil) :events first :exceptions first :stacktrace (nth 2) :code)
+        => {22 "  ;;"
+            23 "  ;; /end to check for 3 lines before and after"
+            24 ""
+            25 "    (closure)))"}))
 
 (fact "does not include source in stack traces when option `include-src?` is false"
-        (try
-          (make-crash)
-          (catch Exception ex
-            (-> (core/exception->json ex {:include-src? false}) :events first :exceptions first :stacktrace second :code)
-            => nil
-            (-> (core/exception->json ex {:include-src? false}) :events first :exceptions first :stacktrace (nth 2) :code)
-            => nil)))
+      (let [ex (make-crash-exception)]
+        (-> (core/exception->json ex {:include-src? false}) :events first :exceptions first :stacktrace second :code)
+        => nil
+        (-> (core/exception->json ex {:include-src? false}) :events first :exceptions first :stacktrace (nth 2) :code)
+        => nil))
+
+(fact "caches exception unrolling"
+      (let [[ex-1 ex-2]  ((fn uncached-fn [] [(make-crash-exception) (make-crash-exception)]))
+            ex-3 (make-crash-exception)
+            cache-size-before (count (keys @core/unrolled-exception-cache))
+            opts              {:project-ns "test"}]
+        (do (core/exception->json ex-1 opts)
+            (core/exception->json ex-2 opts)
+            (core/exception->json ex-3 opts))
+        (- (count (keys @core/unrolled-exception-cache)) cache-size-before)
+        => 2))
 
 (fact "falls back to BUGSNAG_KEY environment var for :apiKey"
       (-> (core/exception->json (ex-info "BOOM" {}) {}) :apiKey) => ..bugsnag-key..
