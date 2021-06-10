@@ -74,7 +74,8 @@
 
 (def unrolled-exception-cache (cache/lru-cache-factory {}))
 
-(defn exception-cache-key [ex project-ns include-src?] (hash [ex project-ns include-src?]))
+(defn exception-cache-key [ex project-ns include-src?]
+  (hash [ex project-ns include-src?]))
 
 (defn- unroll-cached [ex project-ns include-src?]
   (let [k (exception-cache-key ex project-ns include-src?)]
@@ -95,7 +96,8 @@
                      use-exception-cache? true}
               :as   options}]
   (let [ex         (parse-exception exception)
-        cached-ex? (cache/has? unrolled-exception-cache (exception-cache-key ex project-ns include-src?))
+        cached-ex? (and use-exception-cache?
+                        (cache/has? unrolled-exception-cache (exception-cache-key ex project-ns include-src?)))
         base-meta  (merge (if-let [d (ex-data exception)]
                             {"ex–data" d}
                             {})
