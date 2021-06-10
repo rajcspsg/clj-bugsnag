@@ -31,13 +31,13 @@
       nil)))
 
 (defn- transform-stacktrace
-  [trace-elems project-ns]
+  [trace-elems project-ns include-src?]
   (try
     (vec (for [{:keys [file line ns]
                 :as   elem} trace-elems
                :let         [project? (string/starts-with? (or ns "_") project-ns)
                              method   (method-str elem)
-                             code     (when (string/ends-with? (or file "") ".clj")
+                             code     (when (and include-src? (string/ends-with? (or file "") ".clj"))
                                         (find-source-snippet line (string/replace (or method "") "[fn]" "")))]]
            {:file       file
             :lineNumber line
@@ -58,11 +58,11 @@
     thing
     (str thing)))
 
-(defn- unroll [ex project-ns]
+(defn- unroll [ex project-ns include-src?]
   (loop [collected []
          current   ex]
     (let [class-name (.getName ^Class (:class current))
-          stacktrace (transform-stacktrace (:trace-elems current) project-ns)
+          stacktrace (transform-stacktrace (:trace-elems current) project-ns include-src?)
           new-item   {:errorClass class-name
                       :message    (:message current)
                       :stacktrace stacktrace}
@@ -72,31 +72,35 @@
         collected))))
 
 (defn exception->json
-  [exception options]
-  (let [ex         (parse-exception exception)
-        class-name (.getName ^Class (:class ex))
-        project-ns (get options :project-ns "\000")
-        base-meta  (if-let [d (ex-data exception)]
-                     {"ex–data" d}
-                     {})]
-    {:apiKey   (:api-key options (env :bugsnag-key))
+  [exception {:keys [api-key project-ns context group group-fn user
+                     severity version environment meta include-src?]
+              :or   {api-key      (env :bugsnag-key)
+                     project-ns   "\000"
+                     severity     "error"
+                     version      @git-rev
+                     environment  "production"
+                     include-src? true}
+              :as   options}]
+  (let [ex        (parse-exception exception)
+        base-meta (if-let [d (ex-data exception)]
+                    {"ex–data" d}
+                    {})]
+    {:apiKey   api-key
      :notifier {:name    "clj-bugsnag"
-                :version "0.3.0"
-                :url     "https://github.com/whitepages/clj-bugsnag"}
+                :version "0.5.0"
+                :url     "https://github.com/ekataglobal/clj-bugsnag"}
      :events   [{:payloadVersion "2"
-                 :exceptions     (unroll ex project-ns)
-                 :context        (:context options)
-                 :groupingHash   (if-let [group-fn (:group-fn options)]
+                 :exceptions     (unroll ex project-ns include-src?)
+                 :context        context
+                 :groupingHash   (if group-fn
                                    (group-fn ex)
-                                   (:group options))
-                 :severity       (or (:severity options) "error")
-                 :user           (:user options)
-                 :app            {:version      (if (contains? options :version)
-                                                  (:version options)
-                                                  @git-rev)
-                                  :releaseStage (or (:environment options) "production")}
+                                   group)
+                 :severity       severity
+                 :user           user
+                 :app            {:version      version
+                                  :releaseStage environment}
                  :device         {:hostname (.. java.net.InetAddress getLocalHost getHostName)}
-                 :metaData       (walk/postwalk stringify (merge base-meta (:meta options)))}]}))
+                 :metaData       (walk/postwalk stringify (merge base-meta meta))}]}))
 
 (defn notify
   "Main interface for manually reporting exceptions.

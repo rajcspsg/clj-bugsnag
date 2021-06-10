@@ -42,6 +42,15 @@
               24 ""
               25 "    (closure)))"})))
 
+(fact "does not include source in stack traces when option `include-src?` is false"
+        (try
+          (make-crash)
+          (catch Exception ex
+            (-> (core/exception->json ex {:include-src? false}) :events first :exceptions first :stacktrace second :code)
+            => nil
+            (-> (core/exception->json ex {:include-src? false}) :events first :exceptions first :stacktrace (nth 2) :code)
+            => nil)))
+
 (fact "falls back to BUGSNAG_KEY environment var for :apiKey"
       (-> (core/exception->json (ex-info "BOOM" {}) {}) :apiKey) => ..bugsnag-key..
       (provided

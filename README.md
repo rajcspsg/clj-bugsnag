@@ -1,6 +1,6 @@
 
 
-# clj-bugsnag [![Build Status](https://travis-ci.org/whitepages/clj-bugsnag.svg)](https://travis-ci.org/whitepages/clj-bugsnag)
+# clj-bugsnag
 
 A fully fledged [Bugsnag](https://bugsnag.com) exception reporting client for Clojure.
 
@@ -17,23 +17,8 @@ A fully fledged [Bugsnag](https://bugsnag.com) exception reporting client for Cl
 
 ## Releases and Dependency Information
 
-clj-bugsnag is released via [Clojars](https://clojars.org/whitepages/clj-bugsnag). The Latest stable release is 0.3.0
-
-[Leiningen](https://github.com/technomancy/leiningen) dependency information:
-
-```clojure
-[whitepages/clj-bugsnag "0.3.0"]
-```
-
-Maven dependency information:
-
-```xml
-<dependency>
-  <groupId>whitepages</groupId>
-  <artifactId>clj-bugsnag</artifactId>
-  <version>0.3.0</version>
-</dependency>
-```
+The latest version of clj-bugsnag is currently only available via [git-deps](https://clojure.org/guides/deps_and_cli#_using_git_libraries),
+but there is an older version, 0.4.0, available via [Clojars](https://clojars.org/whitepages/clj-bugsnag).
 
 
 ## Example Usage
