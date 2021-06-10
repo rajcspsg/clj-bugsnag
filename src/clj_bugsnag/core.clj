@@ -85,13 +85,14 @@
 
 (defn exception->json
   [exception {:keys [api-key project-ns context group group-fn user
-                     severity version environment meta include-src?]
-              :or   {api-key      (env :bugsnag-key)
-                     project-ns   "\000"
-                     severity     "error"
-                     version      @git-rev
-                     environment  "production"
-                     include-src? true}
+                     severity version environment meta include-src? use-exception-cache?]
+              :or   {api-key              (env :bugsnag-key)
+                     project-ns           "\000"
+                     severity             "error"
+                     version              @git-rev
+                     environment          "production"
+                     include-src?         true
+                     use-exception-cache? true}
               :as   options}]
   (let [ex         (parse-exception exception)
         cached-ex? (cache/has? unrolled-exception-cache (exception-cache-key ex project-ns include-src?))
@@ -104,7 +105,9 @@
                 :version "0.5.0"
                 :url     "https://github.com/ekataglobal/clj-bugsnag"}
      :events   [{:payloadVersion "2"
-                 :exceptions     (unroll-cached ex project-ns include-src?)
+                 :exceptions     ((if use-exception-cache?
+                                    unroll-cached
+                                    unroll) ex project-ns include-src?)
                  :context        context
                  :groupingHash   (if group-fn
                                    (group-fn ex)

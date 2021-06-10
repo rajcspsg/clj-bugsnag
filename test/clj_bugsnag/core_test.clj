@@ -53,7 +53,7 @@
         (-> (core/exception->json ex {:include-src? false}) :events first :exceptions first :stacktrace (nth 2) :code)
         => nil))
 
-(fact "caches exception unrolling"
+(fact "caches exception unrolling by default"
       (let [[ex-1 ex-2]  ((fn uncached-fn [] [(make-crash-exception) (make-crash-exception)]))
             ex-3 (make-crash-exception)
             cache-size-before (count (keys @core/unrolled-exception-cache))
@@ -63,6 +63,15 @@
             (core/exception->json ex-3 opts))
         (- (count (keys @core/unrolled-exception-cache)) cache-size-before)
         => 2))
+
+(fact "doesn't use cache with cache option set to false"
+      (let [ex                ((fn uncached-fn-2 [] (make-crash-exception)))
+            cache-size-before (count (keys @core/unrolled-exception-cache))
+            opts              {:project-ns           "test"
+                               :use-exception-cache? false}]
+        (core/exception->json ex opts)
+        (- (count (keys @core/unrolled-exception-cache)) cache-size-before)
+        => 0))
 
 (fact "falls back to BUGSNAG_KEY environment var for :apiKey"
       (-> (core/exception->json (ex-info "BOOM" {}) {}) :apiKey) => ..bugsnag-key..
