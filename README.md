@@ -65,6 +65,12 @@ but there is an older version, 0.4.0, available via [Clojars](https://clojars.or
 ```
 
 
+## Unit Tests
+
+Running `bin/kaocha` runs all tests using the [kaocha-midje](https://github.com/lambdaisland/kaocha-midje)
+kaocha plugin.
+There is only output when there are failed tests.
+
 ## License
 
 Copyright © 2014-2015 6 Wunderkinder GmbH.

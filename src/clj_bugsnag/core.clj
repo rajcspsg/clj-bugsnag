@@ -7,6 +7,7 @@
              [repl :as repl]
              [string :as string]
              [walk :as walk]]
+            [clojure.core.cache.wrapped :as cache]
             [clojure.java.shell :refer [sh]]
             [environ.core :refer [env]]))
 
@@ -71,26 +72,43 @@
         (recur collected next)
         collected))))
 
+(def unrolled-exception-cache (cache/lru-cache-factory {}))
+
+(defn exception-cache-key [ex project-ns include-src?]
+  (hash [ex project-ns include-src?]))
+
+(defn- unroll-cached [ex project-ns include-src?]
+  (let [k (exception-cache-key ex project-ns include-src?)]
+    (get (cache/through-cache unrolled-exception-cache
+                              k
+                              (fn [_] (unroll ex project-ns include-src?)))
+         k)))
+
 (defn exception->json
   [exception {:keys [api-key project-ns context group group-fn user
-                     severity version environment meta include-src?]
-              :or   {api-key      (env :bugsnag-key)
-                     project-ns   "\000"
-                     severity     "error"
-                     version      @git-rev
-                     environment  "production"
-                     include-src? true}
+                     severity version environment meta include-src? use-exception-cache?]
+              :or   {api-key              (env :bugsnag-key)
+                     project-ns           "\000"
+                     severity             "error"
+                     version              @git-rev
+                     environment          "production"
+                     include-src?         true
+                     use-exception-cache? true}
               :as   options}]
-  (let [ex        (parse-exception exception)
-        base-meta (if-let [d (ex-data exception)]
-                    {"ex–data" d}
-                    {})]
+  (let [ex         (parse-exception exception)
+        cached-ex? (and use-exception-cache?
+                        (cache/has? unrolled-exception-cache (exception-cache-key ex project-ns include-src?)))
+        base-meta  (merge {"cached?" cached-ex?}
+                          (when-let [d (ex-data exception)]
+                            {"ex–data" d}))]
     {:apiKey   api-key
      :notifier {:name    "clj-bugsnag"
                 :version "0.5.0"
                 :url     "https://github.com/ekataglobal/clj-bugsnag"}
      :events   [{:payloadVersion "2"
-                 :exceptions     (unroll ex project-ns include-src?)
+                 :exceptions     ((if use-exception-cache?
+                                    unroll-cached
+                                    unroll) ex project-ns include-src?)
                  :context        context
                  :groupingHash   (if group-fn
                                    (group-fn ex)
