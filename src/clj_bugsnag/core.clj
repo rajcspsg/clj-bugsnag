@@ -98,10 +98,9 @@
   (let [ex         (parse-exception exception)
         cached-ex? (and use-exception-cache?
                         (cache/has? unrolled-exception-cache (exception-cache-key ex project-ns include-src?)))
-        base-meta  (merge (if-let [d (ex-data exception)]
-                            {"ex–data" d}
-                            {})
-                          {"cached-exception?" cached-ex?})]
+        base-meta  (merge {"cached?" cached-ex?}
+                          (when-let [d (ex-data exception)]
+                            {"ex–data" d}))]
     {:apiKey   api-key
      :notifier {:name    "clj-bugsnag"
                 :version "0.5.0"
