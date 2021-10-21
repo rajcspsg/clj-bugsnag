@@ -10,7 +10,7 @@
       (if (map? user)
         user
         {:id user}))
-    (catch Throwable e
+    (catch Throwable _
       nil)))
 
 (defn wrap-bugsnag

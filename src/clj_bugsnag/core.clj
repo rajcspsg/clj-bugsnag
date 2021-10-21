@@ -15,7 +15,7 @@
   (delay
    (try
      (string/trim (:out (sh "git" "rev-parse" "HEAD")))
-     (catch Exception ex "git revision not available"))))
+     (catch Exception _ "git revision not available"))))
 
 (defn- find-source-snippet
   [around, function-name]
@@ -28,7 +28,7 @@
                                        [(+ i start) (string/trimr line)])
                                      (string/split-lines source))]
       (into {} (filter #(<= (- around 3) (first %) (+ around 3)) indexed-lines)))
-    (catch Exception ex
+    (catch Exception _
       nil)))
 
 (defn- transform-stacktrace

@@ -5,7 +5,7 @@
             [midje.sweet :refer :all]))
 
 (fact "middleware calls notify on exception"
-  (let [handler (fn [req] (throw (ex-info "BOOM" {})))
+  (let [handler (fn [_req] (throw (ex-info "BOOM" {})))
         wrapped (ring/wrap-bugsnag handler {})]
     (wrapped {}) => (throws #"BOOM")
     (provided
@@ -14,7 +14,7 @@
 (def user-fn identity)
 
 (facts "about :user-from-request"
-  (let [handler (fn [req] (throw (ex-info "BOOM" {})))
+  (let [handler (fn [_req] (throw (ex-info "BOOM" {})))
         wrapped (ring/wrap-bugsnag handler {:user-from-request #'user-fn})]
     (fact "middleware uses user-from-request function"
       (wrapped {}) => (throws #"BOOM")

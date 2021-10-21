@@ -58,9 +58,9 @@
             ex-3 (make-crash-exception)
             cache-size-before (count (keys @core/unrolled-exception-cache))
             opts              {:project-ns "test"}]
-        (do (core/exception->json ex-1 opts)
-            (core/exception->json ex-2 opts)
-            (core/exception->json ex-3 opts))
+        (core/exception->json ex-1 opts)
+        (core/exception->json ex-2 opts)
+        (core/exception->json ex-3 opts)
         (- (count (keys @core/unrolled-exception-cache)) cache-size-before)
         => 2))
 
