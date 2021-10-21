@@ -1,0 +1,6 @@
+{:config-paths
+ ["marick/midje"]
+
+ :linters
+ {:refer-all
+  {:exclude [midje.sweet]}}}

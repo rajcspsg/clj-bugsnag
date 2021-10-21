@@ -15,7 +15,7 @@
   (delay
    (try
      (string/trim (:out (sh "git" "rev-parse" "HEAD")))
-     (catch Exception ex "git revision not available"))))
+     (catch Exception _ "git revision not available"))))
 
 (defn- find-source-snippet
   [around, function-name]
@@ -28,7 +28,7 @@
                                        [(+ i start) (string/trimr line)])
                                      (string/split-lines source))]
       (into {} (filter #(<= (- around 3) (first %) (+ around 3)) indexed-lines)))
-    (catch Exception ex
+    (catch Exception _
       nil)))
 
 (defn- transform-stacktrace
@@ -84,6 +84,17 @@
                               (fn [_] (unroll ex project-ns include-src?)))
          k)))
 
+(defn truncated-seq [xs max-length]
+  (if (seq (drop max-length xs))
+    (concat (take max-length xs) ['...])
+    xs))
+
+(defn trimmed-data [data {:keys [truncate-data-seqs-to]}]
+  (cond->> data
+    (pos-int? truncate-data-seqs-to)
+    (walk/prewalk
+     #(cond-> % (seq? %) (truncated-seq truncate-data-seqs-to)))))
+
 (defn exception->json
   [exception {:keys [api-key project-ns context group group-fn user
                      severity version environment meta include-src? use-exception-cache?]
@@ -100,7 +111,7 @@
                         (cache/has? unrolled-exception-cache (exception-cache-key ex project-ns include-src?)))
         base-meta  (merge {"cached?" cached-ex?}
                           (when-let [d (ex-data exception)]
-                            {"ex–data" d}))]
+                            {"ex–data" (trimmed-data d options)}))]
     {:apiKey   api-key
      :notifier {:name    "clj-bugsnag"
                 :version "0.5.0"
@@ -126,7 +137,7 @@
    tries to load BUGSNAG_KEY var from enviroment."
   ([exception]
    (notify exception nil))
-  ([exception, options]
+  ([exception options]
    (let [params (exception->json exception options)
          url    "https://notify.bugsnag.com/"]
      (http/post url {:form-params  params

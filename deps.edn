@@ -1,16 +1,20 @@
-{:paths     ["src" "target/classes"]
+{:paths
+ ["src"]
+
  :deps
- {org.clojure/clojure           #:mvn{:version "1.10.3"}
-  org.clojure/core.cache        #:mvn{:version "1.0.207"}
-  clj-stacktrace/clj-stacktrace #:mvn{:version "0.2.8"}
-  clj-http/clj-http             #:mvn{:version "3.12.2"}
-  environ/environ               #:mvn{:version "1.2.0"}
-  org.clojure/data.json         #:mvn{:version "2.3.1"}}
- :mvn/repos {}
- :aliases   {:test {:extra-paths ["test"]
-                    :extra-deps  {midje/midje                   {:mvn/version "1.10.3"
-                                                                 :exclusions  [potemkin/potemkin
-                                                                               riddley/riddley]}
-                                  lambdaisland/kaocha           {:mvn/version "1.0.861"}
-                                  lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}
-                                  lambdaisland/kaocha-midje     {:mvn/version "0.0-5"}}}}}
+ {org.clojure/clojure           {:mvn/version "1.10.3"}
+  org.clojure/core.cache        {:mvn/version "1.0.217"}
+  clj-stacktrace/clj-stacktrace {:mvn/version "0.2.8"}
+  clj-http/clj-http             {:mvn/version "3.12.3"}
+  environ/environ               {:mvn/version "1.2.0"}
+  org.clojure/data.json         {:mvn/version "2.4.0"}}
+
+ :aliases
+ {:test
+  {:extra-paths ["test"]
+   :extra-deps  {midje/midje                   {:mvn/version "1.10.4"
+                                                :exclusions  [potemkin/potemkin
+                                                              riddley/riddley]}
+                 lambdaisland/kaocha           {:mvn/version "1.0.937"}
+                 lambdaisland/kaocha-cloverage {:mvn/version "1.0.75"}
+                 lambdaisland/kaocha-midje     {:mvn/version "0.0-5"}}}}}

@@ -58,9 +58,9 @@
             ex-3 (make-crash-exception)
             cache-size-before (count (keys @core/unrolled-exception-cache))
             opts              {:project-ns "test"}]
-        (do (core/exception->json ex-1 opts)
-            (core/exception->json ex-2 opts)
-            (core/exception->json ex-3 opts))
+        (core/exception->json ex-1 opts)
+        (core/exception->json ex-2 opts)
+        (core/exception->json ex-3 opts)
         (- (count (keys @core/unrolled-exception-cache)) cache-size-before)
         => 2))
 
@@ -108,3 +108,15 @@
       (-> (core/exception->json (ex-info "BOOM" {}) {:meta example-meta})
           :events first (get :metaData) (select-keys (keys example-meta)))
       => example-meta)
+
+(fact "can trim sequences in ex-data"
+      (-> (ex-info "BOOM"
+                   {:infinite-seq (range)
+                    :short-seq    (range 5)
+                    :vec          [1 2 3]})
+          (core/exception->json
+           {:truncate-data-seqs-to 5})
+          :events first (get-in [:metaData "ex–data"]))
+      => {":infinite-seq" [0 1 2 3 4 "..."]
+          ":short-seq"    (range 5)
+          ":vec"          [1 2 3]})
