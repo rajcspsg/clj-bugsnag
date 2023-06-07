@@ -2,5 +2,6 @@
  ["marick/midje"]
 
  :linters
- {:refer-all
+ {:discouraged-var {clj-bugsnag.core/notify {:message "Please don't use this function directly as it can save PII data into bugsnag"}}
+  :refer-all
   {:exclude [midje.sweet]}}}
